@@ -5,12 +5,62 @@ const form = document.getElementById('signup-form');
 const errorEl = document.getElementById('form-error');
 const submitBtn = document.getElementById('submit-btn');
 const consentBox = document.getElementById('privacy_consent');
+const phoneInput = document.getElementById('phone');
+const phoneError = document.getElementById('phone-error');
 const passwordInput = document.getElementById('password');
 const confirmPasswordInput = document.getElementById('confirm_password');
 const passwordError = document.getElementById('password-error');
 const confirmPasswordMessage = document.getElementById('confirm-password-message');
 const passwordToggles = document.querySelectorAll('[data-password-toggle]');
+let phoneTouched = false;
+let phoneComposing = false;
 let confirmPasswordTouched = false;
+
+function sanitizeAndValidatePhone(value, showError = phoneTouched) {
+  let cleaned = value.replace(/\D/g, '');
+  if (cleaned.startsWith('639')) cleaned = `0${cleaned.slice(2)}`;
+  else if (cleaned.startsWith('9')) cleaned = `0${cleaned}`;
+  cleaned = cleaned.slice(0, 11);
+
+  const valid = /^09\d{9}$/.test(cleaned);
+  const message = valid ? '' : 'Enter an 11-digit PH mobile number starting with 09';
+  phoneInput.value = cleaned;
+  phoneInput.setCustomValidity(message);
+  phoneInput.toggleAttribute('aria-invalid', showError && !valid);
+  phoneError.textContent = showError && !valid ? message : '';
+  return valid;
+}
+
+function insertPhoneText(text) {
+  const start = phoneInput.selectionStart ?? phoneInput.value.length;
+  const end = phoneInput.selectionEnd ?? start;
+  sanitizeAndValidatePhone(
+    `${phoneInput.value.slice(0, start)}${text}${phoneInput.value.slice(end)}`,
+  );
+}
+
+phoneInput.addEventListener('compositionstart', () => {
+  phoneComposing = true;
+});
+phoneInput.addEventListener('compositionend', () => {
+  phoneComposing = false;
+  sanitizeAndValidatePhone(phoneInput.value);
+});
+phoneInput.addEventListener('input', () => {
+  if (!phoneComposing) sanitizeAndValidatePhone(phoneInput.value);
+});
+phoneInput.addEventListener('paste', (event) => {
+  event.preventDefault();
+  insertPhoneText(event.clipboardData.getData('text'));
+});
+phoneInput.addEventListener('drop', (event) => {
+  event.preventDefault();
+  insertPhoneText(event.dataTransfer.getData('text'));
+});
+phoneInput.addEventListener('blur', () => {
+  phoneTouched = true;
+  sanitizeAndValidatePhone(phoneInput.value);
+});
 
 function setPasswordVisibility(toggle, visible) {
   const input = document.getElementById(toggle.dataset.passwordToggle);
@@ -102,7 +152,9 @@ form?.addEventListener('submit', async (event) => {
 
   const full_name = form.full_name.value.trim();
   const email = form.email.value.trim();
-  const phone = form.phone.value.trim();
+  phoneTouched = true;
+  sanitizeAndValidatePhone(form.phone.value);
+  const phone = form.phone.value;
   const password = form.password.value;
 
   if (!consentBox.checked) {
