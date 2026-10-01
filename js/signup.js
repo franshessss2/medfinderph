@@ -19,10 +19,10 @@ let confirmPasswordTouched = false;
 function sanitizeAndValidatePhone(value, showError = phoneTouched, caret = phoneInput.selectionStart) {
   let cleaned = value.replace(/\D/g, '');
   let cleanCaret = value.slice(0, caret ?? value.length).replace(/\D/g, '').length;
-  if (cleaned.startsWith('639')) {
+  if (cleaned.startsWith('639') && cleaned.length <= 12) {
     cleaned = `0${cleaned.slice(2)}`;
     cleanCaret = Math.max(1, cleanCaret - 1);
-  } else if (cleaned.startsWith('9')) {
+  } else if (cleaned.startsWith('9') && cleaned.length <= 10) {
     cleaned = `0${cleaned}`;
     cleanCaret += 1;
   }
