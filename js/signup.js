@@ -153,6 +153,8 @@ function clearError() {
   errorEl.textContent = '';
 }
 
+form?.addEventListener('input', clearError);
+
 function setLoading(isLoading) {
   submitBtn.disabled = isLoading || !consentBox.checked;
   submitBtn.classList.toggle('is-loading', isLoading);
