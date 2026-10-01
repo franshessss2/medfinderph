@@ -5,7 +5,12 @@ const form = document.getElementById('signup-form');
 const errorEl = document.getElementById('form-error');
 const submitBtn = document.getElementById('submit-btn');
 const consentBox = document.getElementById('privacy_consent');
+const passwordInput = document.getElementById('password');
+const confirmPasswordInput = document.getElementById('confirm_password');
+const passwordError = document.getElementById('password-error');
+const confirmPasswordMessage = document.getElementById('confirm-password-message');
 const passwordToggles = document.querySelectorAll('[data-password-toggle]');
+let confirmPasswordTouched = false;
 
 function setPasswordVisibility(toggle, visible) {
   const input = document.getElementById(toggle.dataset.passwordToggle);
@@ -32,6 +37,41 @@ function hidePasswords() {
 }
 
 window.addEventListener('pageshow', hidePasswords);
+
+function validatePassword() {
+  const message = passwordInput.value.length < 6
+    ? 'Password must be at least 6 characters.'
+    : '';
+
+  passwordInput.setCustomValidity(message);
+  passwordInput.toggleAttribute('aria-invalid', Boolean(message));
+  passwordError.textContent = message;
+  return !message;
+}
+
+function validatePasswordConfirmation() {
+  const shouldCompare = confirmPasswordInput.value !== '' || confirmPasswordTouched;
+  const mismatch = shouldCompare && confirmPasswordInput.value !== passwordInput.value;
+  const match = shouldCompare && confirmPasswordInput.value !== '' && !mismatch;
+  const message = mismatch ? 'Passwords do not match.' : '';
+
+  confirmPasswordInput.setCustomValidity(message);
+  confirmPasswordInput.toggleAttribute('aria-invalid', mismatch);
+  confirmPasswordMessage.classList.toggle('is-match', match);
+  confirmPasswordMessage.textContent = match ? 'Passwords match.' : message;
+  return !mismatch;
+}
+
+passwordInput.addEventListener('input', () => {
+  validatePassword();
+  validatePasswordConfirmation();
+});
+passwordInput.addEventListener('blur', validatePassword);
+confirmPasswordInput.addEventListener('input', validatePasswordConfirmation);
+confirmPasswordInput.addEventListener('blur', () => {
+  confirmPasswordTouched = true;
+  validatePasswordConfirmation();
+});
 
 // The button mirrors the checkbox; the real gate is the check in the
 // submit handler and the CONSENT_REQUIRED guard in handle_new_user().
@@ -64,23 +104,24 @@ form?.addEventListener('submit', async (event) => {
   const email = form.email.value.trim();
   const phone = form.phone.value.trim();
   const password = form.password.value;
-  const confirmPassword = form.confirm_password.value;
 
   if (!consentBox.checked) {
     showError('Accept the Privacy Notice to create an account.');
     return;
   }
 
+  confirmPasswordTouched = true;
+  validatePassword();
+  validatePasswordConfirmation();
+
+  if (!form.checkValidity()) {
+    showError('Check the highlighted fields and try again.');
+    form.querySelector(':invalid')?.focus();
+    return;
+  }
+
   if (!full_name || !email || !phone || !password) {
     showError('Fill in every field.');
-    return;
-  }
-  if (password.length < 6) {
-    showError('Password must be at least 6 characters.');
-    return;
-  }
-  if (password !== confirmPassword) {
-    showError('Passwords do not match.');
     return;
   }
 
