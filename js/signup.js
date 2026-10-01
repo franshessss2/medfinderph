@@ -5,6 +5,168 @@ const form = document.getElementById('signup-form');
 const errorEl = document.getElementById('form-error');
 const submitBtn = document.getElementById('submit-btn');
 const consentBox = document.getElementById('privacy_consent');
+const fullNameInput = document.getElementById('full_name');
+const fullNameError = document.getElementById('full-name-error');
+const phoneInput = document.getElementById('phone');
+const phoneError = document.getElementById('phone-error');
+const passwordInput = document.getElementById('password');
+const confirmPasswordInput = document.getElementById('confirm_password');
+const passwordError = document.getElementById('password-error');
+const confirmPasswordMessage = document.getElementById('confirm-password-message');
+const passwordToggles = document.querySelectorAll('[data-password-toggle]');
+let fullNameTouched = false;
+let phoneTouched = false;
+let phoneComposing = false;
+let confirmPasswordTouched = false;
+
+function validateFullName(showError = fullNameTouched) {
+  const name = fullNameInput.value.trim();
+  const valid = name.length >= 2 && name.length <= 100 && /\p{L}/u.test(name);
+  const message = valid ? '' : 'Enter your full name (2-100 characters, including letters).';
+
+  fullNameInput.setCustomValidity(message);
+  if (showError && !valid) fullNameInput.setAttribute('aria-invalid', 'true');
+  else fullNameInput.removeAttribute('aria-invalid');
+  fullNameError.textContent = showError && !valid ? message : '';
+  return valid;
+}
+
+fullNameInput.addEventListener('input', () => validateFullName());
+fullNameInput.addEventListener('change', () => validateFullName());
+fullNameInput.addEventListener('blur', () => {
+  fullNameTouched = true;
+  validateFullName();
+});
+
+function sanitizeAndValidatePhone(value, showError = phoneTouched, caret = phoneInput.selectionStart) {
+  let cleaned = value.replace(/\D/g, '');
+  let cleanCaret = value.slice(0, caret ?? value.length).replace(/\D/g, '').length;
+  if (cleaned.startsWith('639') && cleaned.length <= 12) {
+    cleaned = `0${cleaned.slice(2)}`;
+    cleanCaret = Math.max(1, cleanCaret - 1);
+  } else if (cleaned.startsWith('9') && cleaned.length <= 10) {
+    cleaned = `0${cleaned}`;
+    cleanCaret += 1;
+  }
+
+  const valid = /^09\d{9}$/.test(cleaned);
+  const message = valid ? '' : 'Enter an 11-digit PH mobile number starting with 09';
+  phoneInput.value = cleaned;
+  if (document.activeElement === phoneInput && ['tel', 'text'].includes(phoneInput.type)) {
+    const nextCaret = Math.min(cleanCaret, cleaned.length);
+    try {
+      phoneInput.setSelectionRange(nextCaret, nextCaret);
+    } catch (_) {
+      // Some Safari/iOS versions reject selection updates on telephone inputs.
+    }
+  }
+  phoneInput.setCustomValidity(message);
+  if (showError && !valid) phoneInput.setAttribute('aria-invalid', 'true');
+  else phoneInput.removeAttribute('aria-invalid');
+  phoneError.textContent = showError && !valid ? message : '';
+  return valid;
+}
+
+function insertPhoneText(text) {
+  const start = phoneInput.selectionStart ?? phoneInput.value.length;
+  const end = phoneInput.selectionEnd ?? start;
+  sanitizeAndValidatePhone(
+    `${phoneInput.value.slice(0, start)}${text}${phoneInput.value.slice(end)}`,
+    phoneTouched,
+    start + text.length,
+  );
+}
+
+phoneInput.addEventListener('compositionstart', () => {
+  phoneComposing = true;
+});
+phoneInput.addEventListener('compositionend', () => {
+  phoneComposing = false;
+  sanitizeAndValidatePhone(phoneInput.value);
+});
+phoneInput.addEventListener('input', () => {
+  if (!phoneComposing) sanitizeAndValidatePhone(phoneInput.value);
+});
+phoneInput.addEventListener('change', () => sanitizeAndValidatePhone(phoneInput.value));
+phoneInput.addEventListener('paste', (event) => {
+  event.preventDefault();
+  insertPhoneText(event.clipboardData.getData('text'));
+});
+phoneInput.addEventListener('drop', (event) => {
+  event.preventDefault();
+  insertPhoneText(event.dataTransfer.getData('text'));
+});
+phoneInput.addEventListener('blur', () => {
+  phoneTouched = true;
+  sanitizeAndValidatePhone(phoneInput.value);
+});
+
+function setPasswordVisibility(toggle, visible) {
+  const input = document.getElementById(toggle.dataset.passwordToggle);
+  const selectionStart = input.selectionStart;
+  const selectionEnd = input.selectionEnd;
+
+  input.type = visible ? 'text' : 'password';
+  toggle.setAttribute('aria-label', visible ? 'Hide password' : 'Show password');
+  toggle.setAttribute('aria-pressed', String(visible));
+  toggle.querySelector('.eye-icon').toggleAttribute('hidden', visible);
+  toggle.querySelector('.eye-off-icon').toggleAttribute('hidden', !visible);
+
+  input.setSelectionRange(selectionStart, selectionEnd);
+}
+
+passwordToggles.forEach((toggle) => {
+  toggle.addEventListener('click', () => {
+    setPasswordVisibility(toggle, toggle.getAttribute('aria-pressed') !== 'true');
+  });
+});
+
+function hidePasswords() {
+  passwordToggles.forEach((toggle) => setPasswordVisibility(toggle, false));
+}
+
+window.addEventListener('pageshow', hidePasswords);
+
+function validatePassword() {
+  const message = passwordInput.value.length < 6
+    ? 'Password must be at least 6 characters.'
+    : '';
+
+  passwordInput.setCustomValidity(message);
+  if (message) passwordInput.setAttribute('aria-invalid', 'true');
+  else passwordInput.removeAttribute('aria-invalid');
+  passwordError.textContent = message;
+  return !message;
+}
+
+function validatePasswordConfirmation() {
+  const shouldCompare = confirmPasswordInput.value !== '' || confirmPasswordTouched;
+  const mismatch = shouldCompare && confirmPasswordInput.value !== passwordInput.value;
+  const match = shouldCompare && confirmPasswordInput.value !== '' && !mismatch;
+  const message = mismatch ? 'Passwords do not match.' : '';
+
+  confirmPasswordInput.setCustomValidity(message);
+  if (mismatch) confirmPasswordInput.setAttribute('aria-invalid', 'true');
+  else confirmPasswordInput.removeAttribute('aria-invalid');
+  confirmPasswordMessage.classList.toggle('is-match', match);
+  confirmPasswordMessage.textContent = match ? 'Passwords match.' : message;
+  return !mismatch;
+}
+
+function validateBothPasswordFields() {
+  validatePassword();
+  validatePasswordConfirmation();
+}
+
+passwordInput.addEventListener('input', validateBothPasswordFields);
+passwordInput.addEventListener('change', validateBothPasswordFields);
+passwordInput.addEventListener('blur', validateBothPasswordFields);
+confirmPasswordInput.addEventListener('input', validatePasswordConfirmation);
+confirmPasswordInput.addEventListener('change', validatePasswordConfirmation);
+confirmPasswordInput.addEventListener('blur', () => {
+  confirmPasswordTouched = true;
+  validatePasswordConfirmation();
+});
 
 // The button mirrors the checkbox; the real gate is the check in the
 // submit handler and the CONSENT_REQUIRED guard in handle_new_user().
@@ -22,6 +184,8 @@ function clearError() {
   errorEl.textContent = '';
 }
 
+form?.addEventListener('input', clearError);
+
 function setLoading(isLoading) {
   submitBtn.disabled = isLoading || !consentBox.checked;
   submitBtn.classList.toggle('is-loading', isLoading);
@@ -30,29 +194,35 @@ function setLoading(isLoading) {
 
 form?.addEventListener('submit', async (event) => {
   event.preventDefault();
+  hidePasswords();
   clearError();
 
   const full_name = form.full_name.value.trim();
   const email = form.email.value.trim();
-  const phone = form.phone.value.trim();
+  phoneTouched = true;
+  sanitizeAndValidatePhone(form.phone.value);
+  const phone = form.phone.value;
   const password = form.password.value;
-  const confirmPassword = form.confirm_password.value;
 
   if (!consentBox.checked) {
     showError('Accept the Privacy Notice to create an account.');
     return;
   }
 
+  fullNameTouched = true;
+  validateFullName();
+  confirmPasswordTouched = true;
+  validatePassword();
+  validatePasswordConfirmation();
+
+  if (!form.checkValidity()) {
+    showError('Check the highlighted fields and try again.');
+    form.querySelector(':invalid')?.focus();
+    return;
+  }
+
   if (!full_name || !email || !phone || !password) {
     showError('Fill in every field.');
-    return;
-  }
-  if (password.length < 6) {
-    showError('Password must be at least 6 characters.');
-    return;
-  }
-  if (password !== confirmPassword) {
-    showError('Passwords do not match.');
     return;
   }
 
