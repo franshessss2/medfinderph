@@ -5,6 +5,33 @@ const form = document.getElementById('signup-form');
 const errorEl = document.getElementById('form-error');
 const submitBtn = document.getElementById('submit-btn');
 const consentBox = document.getElementById('privacy_consent');
+const passwordToggles = document.querySelectorAll('[data-password-toggle]');
+
+function setPasswordVisibility(toggle, visible) {
+  const input = document.getElementById(toggle.dataset.passwordToggle);
+  const selectionStart = input.selectionStart;
+  const selectionEnd = input.selectionEnd;
+
+  input.type = visible ? 'text' : 'password';
+  toggle.setAttribute('aria-label', visible ? 'Hide password' : 'Show password');
+  toggle.setAttribute('aria-pressed', String(visible));
+  toggle.querySelector('.eye-icon').hidden = visible;
+  toggle.querySelector('.eye-off-icon').hidden = !visible;
+
+  input.setSelectionRange(selectionStart, selectionEnd);
+}
+
+passwordToggles.forEach((toggle) => {
+  toggle.addEventListener('click', () => {
+    setPasswordVisibility(toggle, toggle.getAttribute('aria-pressed') !== 'true');
+  });
+});
+
+function hidePasswords() {
+  passwordToggles.forEach((toggle) => setPasswordVisibility(toggle, false));
+}
+
+window.addEventListener('pageshow', hidePasswords);
 
 // The button mirrors the checkbox; the real gate is the check in the
 // submit handler and the CONSENT_REQUIRED guard in handle_new_user().
@@ -30,6 +57,7 @@ function setLoading(isLoading) {
 
 form?.addEventListener('submit', async (event) => {
   event.preventDefault();
+  hidePasswords();
   clearError();
 
   const full_name = form.full_name.value.trim();
