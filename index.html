@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MedFinder PH — Find medicine at Puerto Princesa pharmacies</title>
+  <meta name="description" content="Search which Puerto Princesa pharmacy has your medicine in stock, compare price, and reserve it for pickup — pay by GCash, skip the guesswork." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <header class="site-header" id="top">
+    <div class="container">
+      <a class="brand" href="index.html">
+        <svg class="brand-mark" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <rect width="34" height="34" rx="10" fill="#0D9488"/>
+          <rect x="14.5" y="8" width="5" height="18" rx="2.5" fill="#ffffff"/>
+          <rect x="8" y="14.5" width="18" height="5" rx="2.5" fill="#ffffff"/>
+          <circle cx="27.5" cy="6.5" r="4" fill="#ffffff"/>
+          <circle cx="27.5" cy="6.5" r="2.4" fill="#15803D"/>
+        </svg>
+        MedFinder PH
+      </a>
+
+      <nav class="nav-links" aria-label="Primary">
+        <a href="#how">How it works</a>
+        <a href="#coverage">Coverage</a>
+      </nav>
+
+      <div class="nav-actions" id="nav-actions">
+        <a class="btn btn-ghost" href="login.html">Log in</a>
+        <a class="btn btn-primary" href="signup.html">Sign up</a>
+      </div>
+
+      <button class="nav-toggle" aria-label="Toggle menu" aria-expanded="false">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <main>
+
+    <section class="hero">
+      <div class="container">
+        <span class="hero-eyebrow">Puerto Princesa, Palawan</span>
+
+        <h1>Check which pharmacy has your medicine — <em>before you leave the house.</em></h1>
+
+        <p class="hero-sub">
+          Search medicines across Puerto Princesa pharmacies, compare live stock and price,
+          and reserve for pickup. No more calling around or driving to three drugstores.
+        </p>
+
+        <form class="search-panel" action="search.html" method="get">
+          <div class="search-form">
+            <label for="q" class="visually-hidden">Medicine name</label>
+            <div class="search-field">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              <input type="text" id="q" name="q" placeholder="Search a medicine, e.g. Biogesic, Amoxicillin…" autocomplete="off" required />
+            </div>
+            <button type="submit" class="btn btn-primary">Search</button>
+          </div>
+        </form>
+
+        <p class="hero-hint">Popular searches: <b>Biogesic</b>, <b>Neozep</b>, <b>Amoxicillin</b></p>
+        <p class="hero-hint" id="hero-secondary-cta">New here? <a href="signup.html" style="color: var(--teal-dark); font-weight: 600;">Create a free account</a> to start reserving.</p>
+      </div>
+    </section>
+
+    <section class="how" id="how">
+      <div class="container">
+        <div class="section-head">
+          <span class="section-eyebrow">How it works</span>
+          <h2>From search to pickup, four steps</h2>
+          <p>Every reservation follows the same path, so you always know what's next.</p>
+        </div>
+
+        <div class="steps">
+          <div class="step" data-reveal>
+            <div class="step-number">1</div>
+            <h3>Search a medicine</h3>
+            <p>Type the name. We check live stock and price at pharmacies across the city.</p>
+          </div>
+          <div class="step" data-reveal>
+            <div class="step-number">2</div>
+            <h3>Reserve your pick</h3>
+            <p>Choose a pharmacy, add your contact details and any notes, and confirm.</p>
+          </div>
+          <div class="step" data-reveal>
+            <div class="step-number">3</div>
+            <h3>Pay via GCash</h3>
+            <p>Send payment and upload your screenshot as proof — no cash needed on arrival.</p>
+          </div>
+          <div class="step" data-reveal>
+            <div class="step-number">4</div>
+            <h3>Pick it up</h3>
+            <p>We notify you once the pharmacy confirms payment and it's ready for pickup.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="coverage" id="coverage">
+      <div class="container">
+        <div class="coverage-copy" data-reveal>
+          <h2>Built around Puerto Princesa's pharmacies</h2>
+          <p>
+            MedFinder PH checks real-time stock and pricing at pharmacies across the city —
+            from chain drugstores to the corner generics store — so a trip out only happens
+            once you already know they have it.
+          </p>
+        </div>
+
+        <div class="coverage-stats" data-reveal>
+          <div>
+            <div class="stat-num">Live</div>
+            <div class="stat-label">Stock &amp; price per pharmacy</div>
+          </div>
+          <div>
+            <div class="stat-num">GCash</div>
+            <div class="stat-label">Pay for your reservation in-app</div>
+          </div>
+          <div>
+            <div class="stat-num">4 stages</div>
+            <div class="stat-label">Track it from reserved to ready</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="cta-band">
+      <div class="container" data-reveal>
+        <h2>Stop guessing which pharmacy has it in stock.</h2>
+        <p>Search a medicine now, or create a free account to start reserving.</p>
+        <a class="btn btn-primary" href="#top">Search a medicine</a>
+        <a class="btn btn-ghost" href="signup.html">Create free account</a>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-brand">
+        <svg width="24" height="24" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <rect width="34" height="34" rx="10" fill="#0D9488"/>
+          <rect x="14.5" y="8" width="5" height="18" rx="2.5" fill="#ffffff"/>
+          <rect x="8" y="14.5" width="18" height="5" rx="2.5" fill="#ffffff"/>
+          <circle cx="27.5" cy="6.5" r="4" fill="#ffffff"/>
+          <circle cx="27.5" cy="6.5" r="2.4" fill="#15803D"/>
+        </svg>
+        MedFinder PH
+      </div>
+
+      <ul class="footer-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="#how">How it works</a></li>
+        <li><a href="login.html">Log in</a></li>
+        <li><a href="signup.html">Sign up</a></li>
+      </ul>
+
+      <p class="footer-note">Puerto Princesa City, Palawan · Not a substitute for professional medical advice.</p>
+      <p class="footer-note footer-disclaimer">MedFinder PH is a reservation aid, not a licensed online pharmacy. Payment and dispensing are completed at the partner pharmacy. Proof of payment upload is a prototype feature. <a href="privacy.html">Privacy Notice</a></p>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script type="module" src="js/connection.js"></script>
+  <script defer src="js/nav.js"></script>
+  <script defer src="js/reveal.js"></script>
+  <script type="module" src="js/landing.js"></script>
+</body>
+</html>

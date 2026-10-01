@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My reservations — MedFinder PH</title>
+  <meta name="description" content="View your medicine reservations, pickup status, and notifications." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="container">
+      <a class="brand" href="index.html">
+        <svg class="brand-mark" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <rect width="34" height="34" rx="10" fill="#0D9488"/>
+          <rect x="14.5" y="8" width="5" height="18" rx="2.5" fill="#ffffff"/>
+          <rect x="8" y="14.5" width="18" height="5" rx="2.5" fill="#ffffff"/>
+          <circle cx="27.5" cy="6.5" r="4" fill="#ffffff"/>
+          <circle cx="27.5" cy="6.5" r="2.4" fill="#15803D"/>
+        </svg>
+        MedFinder PH
+      </a>
+
+      <nav class="nav-links" aria-label="Primary">
+        <a href="search.html">Search</a>
+        <a href="index.html#how">How it works</a>
+      </nav>
+
+      <!-- Static, not toggled: same reasoning as reserve.html — requireAuth()
+           already gates this page, so there's no signed-out state to render. -->
+      <div class="nav-actions">
+        <button class="btn btn-ghost nav-bell" id="notif-toggle" type="button" aria-expanded="false" aria-label="Notifications">
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          <span class="notif-dot" id="notif-dot" hidden></span>
+        </button>
+        <button class="btn btn-ghost" id="logout-btn" type="button">Log out</button>
+      </div>
+
+      <button class="nav-toggle" aria-label="Toggle menu" aria-expanded="false">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <main class="dashboard-main">
+    <div class="container">
+      <div class="dashboard-head">
+        <h1>My reservations</h1>
+        <a class="btn btn-primary" href="search.html">Reserve another</a>
+      </div>
+
+      <p class="form-alert form-alert-info" id="reserved-banner" hidden>
+        Reservation submitted. We'll notify you once payment is confirmed.
+      </p>
+
+      <div id="notif-panel" class="notif-panel" hidden>
+        <div class="notif-panel-head">
+          <h2>Notifications</h2>
+          <button type="button" class="notif-mark-all" id="notif-mark-all">Mark all read</button>
+        </div>
+        <div id="notif-list"><!-- filled by js/dashboard.js --></div>
+      </div>
+
+      <div id="reservations-list">
+        <!-- Filled by js/dashboard.js: a .dashboard-empty state or a
+             stack of .reservation-card rows, newest first. -->
+        <div class="search-loading">Loading…</div>
+      </div>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script type="module" src="js/connection.js"></script>
+  <script defer src="js/nav.js"></script>
+  <script defer src="js/reveal.js"></script>
+  <script type="module" src="js/dashboard.js"></script>
+</body>
+</html>

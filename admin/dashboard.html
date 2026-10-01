@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin — MedFinder PH</title>
+  <meta name="description" content="Manage reservations, pharmacies, medicines, and stock." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="../css/style.css" />
+  <link rel="stylesheet" href="css/admin.css" />
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="container">
+      <a class="brand" href="../index.html">
+        <svg class="brand-mark" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <rect width="34" height="34" rx="10" fill="#0D9488"/>
+          <rect x="14.5" y="8" width="5" height="18" rx="2.5" fill="#ffffff"/>
+          <rect x="8" y="14.5" width="18" height="5" rx="2.5" fill="#ffffff"/>
+          <circle cx="27.5" cy="6.5" r="4" fill="#ffffff"/>
+          <circle cx="27.5" cy="6.5" r="2.4" fill="#15803D"/>
+        </svg>
+        MedFinder PH <span class="admin-badge">Admin</span>
+      </a>
+
+      <!-- No nav-links / responsive hamburger here on purpose: this is a
+           single-purpose internal tool page, not a marketing surface, so
+           it skips the public-site nav chrome entirely (see admin.css). -->
+      <div class="nav-actions">
+        <button class="btn btn-ghost" id="logout-btn" type="button">Log out</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="admin-main">
+    <div class="container">
+      <h1>Admin panel</h1>
+
+      <div class="admin-tabs" role="tablist" aria-label="Admin sections">
+        <button class="admin-tab is-active" role="tab" aria-selected="true" data-tab="reservations">Reservations</button>
+        <button class="admin-tab" role="tab" aria-selected="false" data-tab="pharmacies">Pharmacies</button>
+        <button class="admin-tab" role="tab" aria-selected="false" data-tab="medicines">Medicines</button>
+        <button class="admin-tab" role="tab" aria-selected="false" data-tab="stock">Stock</button>
+        <span class="admin-tab-indicator" aria-hidden="true"></span>
+      </div>
+
+      <section class="admin-panel is-active" id="panel-reservations" role="tabpanel">
+        <div class="admin-panel-head">
+          <h2>Reservations</h2>
+          <div class="admin-panel-actions">
+            <button class="btn btn-ghost btn-sm" id="refresh-reservations-btn" type="button">Refresh</button>
+            <button class="btn btn-ghost btn-sm" id="expire-btn" type="button">Cancel expired</button>
+          </div>
+        </div>
+        <div id="reservations-content"><div class="search-loading">Loading…</div></div>
+      </section>
+
+      <section class="admin-panel" id="panel-pharmacies" role="tabpanel" hidden>
+        <div class="admin-panel-head">
+          <h2>Pharmacies</h2>
+          <button class="btn btn-primary btn-sm" id="add-pharmacy-btn" type="button">Add pharmacy</button>
+        </div>
+        <div id="pharmacies-content"><div class="search-loading">Loading…</div></div>
+      </section>
+
+      <section class="admin-panel" id="panel-medicines" role="tabpanel" hidden>
+        <div class="admin-panel-head">
+          <h2>Medicines</h2>
+          <button class="btn btn-primary btn-sm" id="add-medicine-btn" type="button">Add medicine</button>
+        </div>
+        <div id="medicines-content"><div class="search-loading">Loading…</div></div>
+      </section>
+
+      <section class="admin-panel" id="panel-stock" role="tabpanel" hidden>
+        <div class="admin-panel-head">
+          <h2>Stock</h2>
+          <button class="btn btn-primary btn-sm" id="add-stock-btn" type="button">Add stock entry</button>
+        </div>
+        <div id="stock-content"><div class="search-loading">Loading…</div></div>
+      </section>
+    </div>
+  </main>
+
+  <!-- Single shared modal shell — dashboard.js swaps #modal-body's content
+       per action (add/edit pharmacy, add/edit medicine, add/edit stock)
+       rather than four separate modal markups. -->
+  <div class="admin-modal-overlay" id="modal-overlay" hidden>
+    <div class="admin-modal card" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+      <div class="admin-modal-head">
+        <h2 id="modal-title">Edit</h2>
+        <button class="admin-modal-close" id="modal-close" type="button" aria-label="Close">&times;</button>
+      </div>
+      <div id="modal-body"><!-- filled by js/dashboard.js --></div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script type="module" src="../js/connection.js"></script>
+  <script defer src="../js/reveal.js"></script>
+  <script type="module" src="js/dashboard.js"></script>
+</body>
+</html>

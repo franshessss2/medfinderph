@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sign up — MedFinder PH</title>
+  <meta name="description" content="Create a free MedFinder PH account to reserve medicine at Puerto Princesa pharmacies." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="container">
+      <a class="brand" href="index.html">
+        <svg class="brand-mark" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <rect width="34" height="34" rx="10" fill="#0D9488"/>
+          <rect x="14.5" y="8" width="5" height="18" rx="2.5" fill="#ffffff"/>
+          <rect x="8" y="14.5" width="18" height="5" rx="2.5" fill="#ffffff"/>
+          <circle cx="27.5" cy="6.5" r="4" fill="#ffffff"/>
+          <circle cx="27.5" cy="6.5" r="2.4" fill="#15803D"/>
+        </svg>
+        MedFinder PH
+      </a>
+      <div class="nav-actions">
+        <span class="auth-switch-text">Already have an account?</span>
+        <a class="btn btn-ghost" href="login.html">Log in</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="auth-main">
+    <div class="container auth-container">
+      <div class="card auth-card">
+        <h1>Create your account</h1>
+        <p class="auth-sub">Free — you'll need it to reserve medicine and track pickups.</p>
+
+        <p class="form-alert form-alert-error" id="form-error" role="alert" hidden></p>
+
+        <form id="signup-form" novalidate data-requires-network>
+          <div class="field">
+            <label for="full_name">Full name</label>
+            <input type="text" id="full_name" name="full_name" autocomplete="name" required />
+          </div>
+          <div class="field">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" autocomplete="email" required />
+          </div>
+          <div class="field">
+            <label for="phone">Phone number</label>
+            <input type="tel" id="phone" name="phone" autocomplete="tel" placeholder="09XX XXX XXXX" required />
+          </div>
+          <div class="field">
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" autocomplete="new-password" minlength="6" required />
+            <span class="field-hint">At least 6 characters.</span>
+          </div>
+          <div class="field">
+            <label for="confirm_password">Confirm password</label>
+            <input type="password" id="confirm_password" name="confirm_password" autocomplete="new-password" required />
+          </div>
+
+          <label class="consent-row" for="privacy_consent">
+            <input type="checkbox" id="privacy_consent" name="privacy_consent" />
+            <span>I have read and agree to the <a href="privacy.html" target="_blank" rel="noopener">Privacy Notice</a>. I consent to MedFinder PH processing my profile data and payment proofs to provide reservation services (RA 10173).</span>
+          </label>
+
+          <button type="submit" class="btn btn-primary btn-block" id="submit-btn" disabled>Create account</button>
+        </form>
+
+        <p class="auth-foot">Already have an account? <a href="login.html">Log in</a></p>
+      </div>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script type="module" src="js/connection.js"></script>
+  <script defer src="js/reveal.js"></script>
+  <script type="module" src="js/signup.js"></script>
+</body>
+</html>

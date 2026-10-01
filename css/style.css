@@ -1,0 +1,1918 @@
+/* =====================================================================
+   MedFinder PH — global stylesheet
+   Design tokens (colors/type/spacing) live at the top under :root.
+   Shared across every public + customer page. Admin pages load this
+   file too, plus admin/css/admin.css on top for dashboard-only layout.
+   ===================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap');
+
+/* Native page-navigation transitions (Chrome/Edge — no-op elsewhere,
+   nothing to feature-detect). Cross-fades the whole page on every link
+   click across the site instead of a hard cut, at the same speed as
+   everything else so it reads as one motion system, not a slow gimmick. */
+@view-transition {
+  navigation: auto;
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: var(--dur-med, 260ms);
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  @view-transition {
+    navigation: none;
+  }
+}
+
+:root {
+  /* Color — teal primary per brief, everything else derived to sit
+     quietly next to it rather than compete with it. */
+  --bg: #ffffff;
+  --surface: #f6f9f8;
+  /* section bands, input fills */
+  --surface-raised: #ffffff;
+  /* cards, sitting on --surface */
+  --line: #e3e9e7;
+  --line-strong: #cbd6d3;
+
+  --teal: #0d9488;
+  --teal-dark: #0f766e;
+  --teal-darker: #115e56;
+  --teal-tint: #ecfdf9;
+  --teal-tint-2: #d3f5ee;
+
+  --ink: #16211d;
+  --ink-muted: #5c6d68;
+  --ink-faint: #8a9a95;
+
+  --status-in-fg: #15803d;
+  --status-in-bg: #eaf7ee;
+  --status-low-fg: #b45309;
+  --status-low-bg: #fdf3e3;
+  --status-out-fg: #64748b;
+  --status-out-bg: #eef1f0;
+  --status-neutral-fg: #334155;
+  --status-neutral-bg: #eef2f6;
+
+  --danger: #b91c1c;
+
+  /* Type */
+  --font-display: 'Fraunces', ui-serif, Georgia, serif;
+  --font-body: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+
+  /* Scale */
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 22px;
+  --shadow-card: 0 1px 2px rgba(22, 33, 29, 0.04), 0 8px 24px -12px rgba(22, 33, 29, 0.12);
+  --shadow-card-hover: 0 2px 4px rgba(22, 33, 29, 0.06), 0 16px 32px -12px rgba(22, 33, 29, 0.16);
+  --shadow-glow: 0 0 0 1px rgba(13, 148, 136, 0.16), 0 12px 28px -10px rgba(13, 148, 136, 0.35);
+
+  /* Motion — one timing system reused everywhere so easing reads as a
+     single decision, not per-component guesses. */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-spring: cubic-bezier(0.34, 1.42, 0.64, 1);
+  --dur-fast: 150ms;
+  --dur-med: 260ms;
+  --dur-slow: 460ms;
+
+  --container: 1120px;
+}
+
+/* ---------------------------------------------------------------------
+   Reset & base
+   --------------------------------------------------------------------- */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+/* ---------------------------------------------------------------------
+   Motion primitives
+   Two building blocks reused everywhere: [data-reveal] fades/lifts an
+   element in once when js/reveal.js flags it .is-visible (falls back to
+   fully visible if JS never runs, so nothing depends on it to render);
+   .is-loading is the shimmer used for every async placeholder.
+   --------------------------------------------------------------------- */
+
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity var(--dur-slow) var(--ease-out), transform var(--dur-slow) var(--ease-out);
+}
+
+[data-reveal].is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-reveal] {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -320px 0;
+  }
+
+  100% {
+    background-position: 320px 0;
+  }
+}
+
+.search-loading {
+  position: relative;
+  overflow: hidden;
+  color: transparent;
+  background: linear-gradient(90deg, var(--surface) 25%, var(--teal-tint) 50%, var(--surface) 75%);
+  background-size: 640px 100%;
+  animation: shimmer 1.4s ease-in-out infinite;
+  border-radius: var(--radius-sm);
+  min-height: 52px;
+  padding: 16px 18px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .search-loading {
+    animation: none;
+    background: var(--surface);
+  }
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-display);
+  color: var(--ink);
+  line-height: 1.15;
+  margin: 0;
+  font-weight: 600;
+}
+
+p {
+  margin: 0;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+input,
+select,
+textarea {
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+}
+
+:focus-visible {
+  outline: 2px solid var(--teal-dark);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+.container {
+  width: 100%;
+  max-width: var(--container);
+  margin-inline: auto;
+  padding-inline: 24px;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* ---------------------------------------------------------------------
+   Buttons
+   --------------------------------------------------------------------- */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 22px;
+  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1;
+  position: relative;
+  overflow: hidden;
+  transition: background-color var(--dur-fast) ease, border-color var(--dur-fast) ease,
+    transform var(--dur-fast) var(--ease-spring), box-shadow var(--dur-fast) ease;
+}
+
+.btn:active {
+  transform: translateY(1px) scale(0.98);
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn:disabled:active {
+  transform: none;
+}
+
+/* Loading spinner — toggled by JS alongside the disabled state on every
+   async submit button (login, signup, reserve, admin modals). Pure
+   pseudo-element, so it never touches the button's actual text node. */
+.btn.is-loading {
+  color: transparent !important;
+  pointer-events: none;
+}
+
+.btn.is-loading:disabled {
+  opacity: 1;
+}
+
+.btn.is-loading::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 16px;
+  height: 16px;
+  margin: -8px 0 0 -8px;
+  border: 2px solid rgba(22, 33, 29, 0.15);
+  border-top-color: var(--ink-muted);
+  border-radius: 50%;
+  animation: btn-spin 0.6s linear infinite;
+}
+
+.btn-primary.is-loading::before {
+  border-color: rgba(255, 255, 255, 0.35);
+  border-top-color: #fff;
+}
+
+@keyframes btn-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.btn-primary {
+  background: var(--teal);
+  color: #ffffff;
+}
+
+.btn-primary:hover {
+  background: var(--teal-dark);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-glow);
+}
+
+/* One-shot diagonal shine sweep on hover — reserved for the primary
+   action only, so it reads as "the button that matters" rather than
+   decoration repeated on every control. */
+.btn-primary::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(115deg, transparent 40%, rgba(255, 255, 255, 0.28) 50%, transparent 60%);
+  background-size: 220% 100%;
+  background-position: 120% 0;
+  transition: background-position var(--dur-slow) var(--ease-out);
+  pointer-events: none;
+}
+
+.btn-primary:hover::after {
+  background-position: -20% 0;
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--ink);
+  border-color: var(--line-strong);
+}
+
+.btn-ghost:hover {
+  border-color: var(--teal);
+  color: var(--teal-dark);
+  transform: translateY(-1px);
+}
+
+.btn-text {
+  background: transparent;
+  padding: 8px 4px;
+  color: var(--ink-muted);
+  font-weight: 600;
+}
+
+.btn-text:hover {
+  color: var(--teal-dark);
+}
+
+.btn-block {
+  width: 100%;
+}
+
+/* ---------------------------------------------------------------------
+   Header / nav
+   --------------------------------------------------------------------- */
+
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: saturate(180%) blur(10px);
+  border-bottom: 1px solid transparent;
+  box-shadow: none;
+  transition: box-shadow var(--dur-med) ease, border-color var(--dur-med) ease;
+}
+
+/* .is-scrolled is toggled by js/reveal.js past a small scroll threshold —
+   a hairline-plus-shadow only appears once there's page behind it to
+   separate from, so the header stays flush with the hero at rest. */
+.site-header.is-scrolled {
+  border-bottom-color: var(--line);
+  box-shadow: 0 1px 2px rgba(22, 33, 29, 0.04), 0 8px 20px -14px rgba(22, 33, 29, 0.18);
+}
+
+.site-header .container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 72px;
+  transition: height var(--dur-med) ease;
+}
+
+.site-header.is-scrolled .container {
+  height: 64px;
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 20px;
+  color: var(--ink);
+  white-space: nowrap;
+}
+
+.brand-mark {
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  transition: transform var(--dur-med) var(--ease-spring);
+}
+
+.brand:hover .brand-mark {
+  transform: rotate(-8deg) scale(1.06);
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+}
+
+.nav-links a {
+  position: relative;
+  font-size: 14.5px;
+  font-weight: 500;
+  color: var(--ink-muted);
+  transition: color 140ms ease;
+}
+
+.nav-links a::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -4px;
+  width: 100%;
+  height: 1.5px;
+  background: var(--teal);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--dur-fast) var(--ease-out);
+}
+
+.nav-links a:hover {
+  color: var(--teal-dark);
+}
+
+.nav-links a:hover::after {
+  transform: scaleX(1);
+}
+
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* On mobile, hide nav-actions buttons entirely — the hamburger menu
+   is the nav entry point on small screens. Log in / Sign up appear
+   inside the opened mobile menu via nav.js's injectMobileActions();
+   the notif bell and log out button are relocated there directly by
+   relocateAccountControls(), see .nav-mobile-account below. */
+@media (max-width: 860px) {
+  .nav-actions .btn {
+    display: none;
+  }
+}
+
+/* Wrapper the bell + log out button land in in inside the mobile
+   dropdown — relocateAccountControls() in nav.js moves the real
+   elements here (not clones), so their click listeners still work. */
+.nav-mobile-account {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-top: 12px;
+  margin-top: 8px;
+  border-top: 1px solid var(--line);
+  width: 100%;
+}
+
+.nav-toggle {
+  display: none;
+  background: none;
+  border: none;
+  padding: 8px;
+}
+
+/* Hamburger morphs into an X — keyed off aria-expanded, which nav.js
+   already sets on every toggle, so no JS change is needed here. */
+.nav-toggle svg line {
+  transform-box: fill-box;
+  transform-origin: center;
+  transition: transform var(--dur-med) var(--ease-spring), opacity var(--dur-fast) ease;
+}
+
+.nav-toggle[aria-expanded="true"] svg line:nth-child(1) {
+  transform: translateY(6px) rotate(45deg);
+}
+
+.nav-toggle[aria-expanded="true"] svg line:nth-child(2) {
+  opacity: 0;
+}
+
+.nav-toggle[aria-expanded="true"] svg line:nth-child(3) {
+  transform: translateY(-6px) rotate(-45deg);
+}
+
+@media (max-width: 860px) {
+  .nav-links {
+    display: none;
+  }
+
+  .nav-toggle {
+    display: inline-flex;
+  }
+
+  .nav-links.nav-open {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    position: absolute;
+    top: 72px;
+    left: 0;
+    right: 0;
+    background: var(--bg);
+    border-bottom: 1px solid var(--line);
+    padding: 12px 24px 20px;
+    box-shadow: var(--shadow-card);
+    animation: fade-up var(--dur-med) var(--ease-out);
+  }
+
+  .nav-links.nav-open a {
+    padding: 10px 0;
+    width: 100%;
+  }
+}
+
+/* ---------------------------------------------------------------------
+   Hero — the search bar is the page's thesis, not a headline alone
+   --------------------------------------------------------------------- */
+
+.hero {
+  position: relative;
+  padding: 88px 0 96px;
+  background:
+    radial-gradient(720px 360px at 82% -10%, var(--teal-tint) 0%, transparent 65%),
+    var(--bg);
+  overflow: hidden;
+}
+
+/* Signature element: a slow radar-style sweep behind the hero — the one
+   bold motion move on the page, standing in for "we're checking live
+   stock right now" rather than a generic decorative gradient. Sits
+   behind everything, never competes with the type or form. */
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -180px;
+  right: -160px;
+  width: 620px;
+  height: 620px;
+  border-radius: 50%;
+  background: conic-gradient(from 0deg, transparent 0deg, rgba(13, 148, 136, 0.16) 40deg, transparent 90deg);
+  animation: hero-sweep 7s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes hero-sweep {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero::before {
+    animation: none;
+  }
+}
+
+.hero .container {
+  position: relative;
+  display: grid;
+  gap: 28px;
+  max-width: 760px;
+}
+
+.hero .container>* {
+  animation: fade-up var(--dur-slow) var(--ease-out) both;
+}
+
+.hero-eyebrow {
+  animation-delay: 0ms;
+}
+
+.hero h1 {
+  animation-delay: 60ms;
+}
+
+.hero-sub {
+  animation-delay: 120ms;
+}
+
+.search-panel {
+  animation-delay: 180ms;
+}
+
+.hero-hint {
+  animation-delay: 220ms;
+}
+
+#hero-secondary-cta {
+  animation-delay: 260ms;
+}
+
+.hero-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  width: fit-content;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: var(--teal-tint-2);
+  color: var(--teal-darker);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.hero h1 {
+  font-size: clamp(34px, 5vw, 54px);
+  letter-spacing: -0.01em;
+}
+
+.hero h1 em {
+  font-style: normal;
+  color: var(--teal-dark);
+}
+
+.hero-sub {
+  font-size: 18px;
+  color: var(--ink-muted);
+  max-width: 52ch;
+}
+
+.search-panel {
+  background: var(--surface-raised);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  padding: 10px;
+  margin-top: 8px;
+  transition: box-shadow var(--dur-med) ease, border-color var(--dur-med) ease;
+}
+
+.search-panel:focus-within {
+  border-color: var(--teal);
+  box-shadow: var(--shadow-glow);
+}
+
+.search-form {
+  display: flex;
+  gap: 8px;
+}
+
+.search-field {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+}
+
+.search-field svg {
+  flex-shrink: 0;
+  color: var(--ink-faint);
+}
+
+.search-field input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 16px;
+  color: var(--ink);
+}
+
+.search-field input::placeholder {
+  color: var(--ink-faint);
+}
+
+.search-form .btn-primary {
+  padding-inline: 26px;
+  border-radius: calc(var(--radius-lg) - 10px);
+}
+
+.hero-hint {
+  font-size: 13.5px;
+  color: var(--ink-faint);
+  padding: 6px 6px 0;
+}
+
+.hero-hint b {
+  color: var(--ink-muted);
+  font-weight: 600;
+}
+
+/* ---------------------------------------------------------------------
+   Stock-status indicator — the product's signature element.
+   A small live-status dot, reused on search results, dashboard, admin.
+   Only the "in stock" state pulses: it is the one state worth calling
+   live and current; the others are calm, static facts.
+   --------------------------------------------------------------------- */
+
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 5px 11px 5px 9px;
+  border-radius: 999px;
+  font-size: 12.5px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.status-in {
+  color: var(--status-in-fg);
+  background: var(--status-in-bg);
+}
+
+.status-in .status-dot {
+  background: var(--status-in-fg);
+  box-shadow: 0 0 0 0 rgba(21, 128, 61, 0.5);
+  animation: status-pulse 2.2s ease-out infinite;
+}
+
+.status-low {
+  color: var(--status-low-fg);
+  background: var(--status-low-bg);
+}
+
+.status-low .status-dot {
+  background: var(--status-low-fg);
+}
+
+.status-out {
+  color: var(--status-out-fg);
+  background: var(--status-out-bg);
+}
+
+.status-out .status-dot {
+  background: var(--status-out-fg);
+}
+
+.status-neutral {
+  color: var(--status-neutral-fg);
+  background: var(--status-neutral-bg);
+}
+
+.status-neutral .status-dot {
+  background: var(--status-neutral-fg);
+}
+
+@keyframes status-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(21, 128, 61, 0.45);
+  }
+
+  70% {
+    box-shadow: 0 0 0 7px rgba(21, 128, 61, 0);
+  }
+
+  100% {
+    box-shadow: 0 0 0 0 rgba(21, 128, 61, 0);
+  }
+}
+
+/* ---------------------------------------------------------------------
+   How it works — a real 4-step sequence, so numbering earns its place
+   --------------------------------------------------------------------- */
+
+.how {
+  padding: 96px 0;
+  border-top: 1px solid var(--line);
+}
+
+.section-head {
+  max-width: 560px;
+  margin-bottom: 48px;
+}
+
+.section-eyebrow {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--teal-dark);
+  margin-bottom: 10px;
+  display: block;
+}
+
+.section-head h2 {
+  font-size: clamp(26px, 3.4vw, 36px);
+  margin-bottom: 12px;
+}
+
+.section-head p {
+  color: var(--ink-muted);
+  font-size: 16.5px;
+}
+
+.steps {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  background: var(--line);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.step {
+  background: var(--surface-raised);
+  padding: 30px 26px 32px;
+  position: relative;
+  transition: background var(--dur-med) ease;
+}
+
+.step:hover {
+  background: var(--teal-tint);
+}
+
+.step-number {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--teal);
+  border: 1px solid var(--teal-tint-2);
+  background: var(--teal-tint);
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+  position: relative;
+  z-index: 1;
+  transition: background var(--dur-fast) ease, color var(--dur-fast) ease, transform var(--dur-fast) var(--ease-spring);
+}
+
+.step:hover .step-number {
+  background: var(--teal);
+  color: #fff;
+  transform: scale(1.08);
+}
+
+.step h3 {
+  font-size: 17.5px;
+  margin-bottom: 8px;
+}
+
+.step p {
+  color: var(--ink-muted);
+  font-size: 14.5px;
+  line-height: 1.6;
+}
+
+@media (max-width: 860px) {
+  .steps {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 560px) {
+  .steps {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---------------------------------------------------------------------
+   Trust / coverage strip
+   --------------------------------------------------------------------- */
+
+.coverage {
+  padding: 72px 0;
+  background: var(--surface);
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+
+.coverage .container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 40px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.coverage-copy {
+  max-width: 460px;
+}
+
+.coverage-copy h2 {
+  font-size: 24px;
+  margin-bottom: 10px;
+}
+
+.coverage-copy p {
+  color: var(--ink-muted);
+  font-size: 15px;
+}
+
+.coverage-stats {
+  display: flex;
+  gap: 40px;
+}
+
+.stat-num {
+  font-family: var(--font-display);
+  font-size: 34px;
+  font-weight: 600;
+  color: var(--teal-dark);
+  line-height: 1;
+  margin-bottom: 6px;
+}
+
+.stat-label {
+  font-size: 13px;
+  color: var(--ink-muted);
+}
+
+/* ---------------------------------------------------------------------
+   CTA band
+   --------------------------------------------------------------------- */
+
+.cta-band {
+  padding: 90px 0;
+  text-align: center;
+  position: relative;
+  background: radial-gradient(600px 260px at 50% 120%, var(--teal-tint) 0%, transparent 70%);
+  overflow: hidden;
+}
+
+.cta-band h2 {
+  font-size: clamp(26px, 3.6vw, 38px);
+  max-width: 640px;
+  margin-inline: auto;
+  margin-bottom: 14px;
+}
+
+.cta-band p {
+  color: var(--ink-muted);
+  max-width: 480px;
+  margin-inline: auto;
+  margin-bottom: 28px;
+}
+
+/* ---------------------------------------------------------------------
+   Footer
+   --------------------------------------------------------------------- */
+
+.site-footer {
+  border-top: 1px solid var(--line);
+  padding: 48px 0 32px;
+}
+
+.site-footer .container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.footer-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-display);
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.footer-brand svg {
+  width: 24px;
+  height: 24px;
+}
+
+.footer-note {
+  font-size: 13px;
+  color: var(--ink-faint);
+}
+
+.footer-links {
+  display: flex;
+  gap: 24px;
+}
+
+.footer-links a {
+  font-size: 13.5px;
+  color: var(--ink-muted);
+}
+
+.footer-links a:hover {
+  color: var(--teal-dark);
+}
+
+/* ---------------------------------------------------------------------
+   Generic card (reused by search results, dashboard, admin tables)
+   --------------------------------------------------------------------- */
+
+.card {
+  background: var(--surface-raised);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+  transition: box-shadow var(--dur-med) var(--ease-out), transform var(--dur-med) var(--ease-out), border-color var(--dur-med) ease;
+}
+
+.card:hover {
+  box-shadow: var(--shadow-card-hover);
+  transform: translateY(-3px);
+  border-color: var(--line-strong);
+}
+
+/* ---------------------------------------------------------------------
+   Form fields (shared by auth + reservation forms, built next)
+   --------------------------------------------------------------------- */
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 18px;
+}
+
+.field label {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.field input,
+.field select,
+.field textarea {
+  padding: 11px 14px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  transition: border-color var(--dur-fast) ease, background var(--dur-fast) ease, box-shadow var(--dur-fast) ease;
+}
+
+.field input:focus,
+.field select:focus,
+.field textarea:focus {
+  border-color: var(--teal);
+  background: var(--bg);
+  outline: none;
+  box-shadow: 0 0 0 3px var(--teal-tint-2);
+}
+
+.field-hint {
+  font-size: 12.5px;
+  color: var(--ink-faint);
+}
+
+.field-error {
+  font-size: 12.5px;
+  color: var(--danger);
+}
+
+/* ---------------------------------------------------------------------
+   Auth pages (login / signup) — centered card, shared by both
+   --------------------------------------------------------------------- */
+
+.auth-main {
+  min-height: calc(100vh - 72px);
+  display: flex;
+  align-items: center;
+  padding: 56px 0;
+  background:
+    radial-gradient(640px 320px at 50% -10%, var(--teal-tint) 0%, transparent 65%),
+    var(--bg);
+}
+
+.auth-container {
+  display: flex;
+  justify-content: center;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 420px;
+  padding: 40px 36px 32px;
+}
+
+.auth-card h1 {
+  font-size: 28px;
+  margin-bottom: 8px;
+}
+
+.auth-sub {
+  color: var(--ink-muted);
+  font-size: 14.5px;
+  margin-bottom: 28px;
+}
+
+.auth-foot {
+  text-align: center;
+  font-size: 14px;
+  color: var(--ink-muted);
+  margin-top: 20px;
+}
+
+.auth-foot a {
+  color: var(--teal-dark);
+  font-weight: 600;
+}
+
+.auth-switch-text {
+  font-size: 13.5px;
+  color: var(--ink-muted);
+}
+
+/* Form-level alert banner — distinct from the small per-field hint/error
+   text above, which stays inline under a single input. */
+.form-alert {
+  font-size: 13.5px;
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  margin-bottom: 18px;
+  border: 1px solid transparent;
+  line-height: 1.5;
+}
+
+.form-alert-error {
+  color: var(--danger);
+  background: #fdecec;
+  border-color: #f6caca;
+  animation: alert-shake var(--dur-slow) var(--ease-out);
+}
+
+.form-alert-info {
+  color: var(--teal-darker);
+  background: var(--teal-tint);
+  border-color: var(--teal-tint-2);
+  animation: alert-pop var(--dur-med) var(--ease-spring) both;
+}
+
+/* A decaying horizontal shake reads as "attention" without being
+   obnoxious — settles back to rest by the end rather than looping. */
+@keyframes alert-shake {
+  0% {
+    opacity: 0;
+    transform: translateX(0);
+  }
+
+  12% {
+    opacity: 1;
+  }
+
+  20% {
+    transform: translateX(-6px);
+  }
+
+  35% {
+    transform: translateX(5px);
+  }
+
+  50% {
+    transform: translateX(-4px);
+  }
+
+  65% {
+    transform: translateX(3px);
+  }
+
+  80% {
+    transform: translateX(-1.5px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes alert-pop {
+  from {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* ---------------------------------------------------------------------
+   Search results
+   --------------------------------------------------------------------- */
+
+.search-hero {
+  padding: 44px 0 32px;
+  border-bottom: 1px solid var(--line);
+}
+
+.search-hero h1 {
+  font-size: clamp(22px, 3vw, 30px);
+  margin-bottom: 18px;
+}
+
+.search-hero .search-panel {
+  margin-top: 0;
+}
+
+.results-main {
+  padding: 40px 0 96px;
+  min-height: 40vh;
+}
+
+.medicine-group {
+  margin-bottom: 44px;
+}
+
+.medicine-group:last-child {
+  margin-bottom: 0;
+}
+
+.medicine-group-head {
+  margin-bottom: 16px;
+}
+
+.medicine-group-head h2 {
+  font-size: 20px;
+  margin-bottom: 4px;
+}
+
+.medicine-group-head p {
+  font-size: 13.5px;
+  color: var(--ink-muted);
+}
+
+.result-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.result-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 18px 22px;
+  animation: fade-up var(--dur-med) var(--ease-out) both;
+}
+
+.result-list .result-card:nth-child(1) {
+  animation-delay: 0ms;
+}
+
+.result-list .result-card:nth-child(2) {
+  animation-delay: 40ms;
+}
+
+.result-list .result-card:nth-child(3) {
+  animation-delay: 80ms;
+}
+
+.result-list .result-card:nth-child(n+4) {
+  animation-delay: 120ms;
+}
+
+.result-main h3 {
+  font-size: 16px;
+  margin-bottom: 3px;
+}
+
+.result-location {
+  font-size: 13px;
+  color: var(--ink-muted);
+}
+
+.result-meta {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-shrink: 0;
+}
+
+.result-price {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 17px;
+  color: var(--ink);
+  min-width: 68px;
+  text-align: right;
+}
+
+.result-action {
+  flex-shrink: 0;
+}
+
+.result-unavailable {
+  font-size: 13px;
+  color: var(--ink-faint);
+}
+
+.btn-sm {
+  padding: 9px 18px;
+  font-size: 13.5px;
+}
+
+.search-empty,
+.search-prompt {
+  text-align: center;
+  padding: 64px 24px;
+  color: var(--ink-muted);
+}
+
+.search-empty h2,
+.search-prompt h2 {
+  font-family: var(--font-display);
+  font-size: 22px;
+  color: var(--ink);
+  margin-bottom: 10px;
+}
+
+/* Desktop / laptop: the list owns one four-track grid shared by every
+   row (subgrid), so price and badge columns are sized by the widest
+   row and line up vertically. The two outer tracks are equal 1fr, which
+   keeps the price + badge block centered regardless of name, address,
+   badge or action widths. Falls back to the flex row above where
+   subgrid is unsupported. */
+@media (min-width: 641px) {
+  @supports (grid-template-columns: subgrid) {
+    .result-list {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto auto minmax(0, 1fr);
+      column-gap: 16px;
+      row-gap: 12px;
+    }
+
+    .result-card {
+      display: grid;
+      grid-column: 1 / -1;
+      grid-template-columns: subgrid;
+      align-items: center;
+    }
+
+    .result-meta {
+      display: contents;
+    }
+
+    .result-main {
+      min-width: 0;
+    }
+
+    .result-price {
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .result-meta .status-pill {
+      justify-self: start;
+    }
+
+    .result-action {
+      justify-self: end;
+    }
+  }
+}
+
+@media (max-width: 640px) {
+  .result-card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .result-meta {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .result-price {
+    min-width: 0;
+    text-align: left;
+  }
+}
+
+/* ---------------------------------------------------------------------
+   Reservation page
+   --------------------------------------------------------------------- */
+
+.reserve-main {
+  padding: 48px 0 96px;
+}
+
+.reserve-layout {
+  max-width: 640px;
+  margin-inline: auto;
+}
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13.5px;
+  color: var(--ink-muted);
+  margin-bottom: 24px;
+}
+
+.back-link:hover {
+  color: var(--teal-dark);
+}
+
+.summary-card {
+  padding: 20px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.summary-main h2 {
+  font-size: 18px;
+  margin-bottom: 4px;
+}
+
+.summary-sub {
+  font-size: 13.5px;
+  color: var(--ink-muted);
+}
+
+.summary-meta {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.summary-price {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 20px;
+  color: var(--ink);
+}
+
+.form-card {
+  padding: 30px 28px;
+}
+
+.form-card h1 {
+  font-size: 22px;
+  margin-bottom: 22px;
+}
+
+.field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+@media (max-width: 560px) {
+  .field-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+.gcash-box {
+  background: var(--teal-tint);
+  border: 1px solid var(--teal-tint-2);
+  border-radius: var(--radius-sm);
+  padding: 16px 18px;
+  margin-bottom: 20px;
+  font-size: 14px;
+  color: var(--ink);
+  line-height: 1.55;
+}
+
+.gcash-box strong {
+  color: var(--teal-darker);
+}
+
+.gcash-total {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 17px;
+}
+
+.file-drop {
+  display: block;
+  border: 1.5px dashed var(--line-strong);
+  border-radius: var(--radius-sm);
+  padding: 20px;
+  text-align: center;
+  background: var(--surface);
+  cursor: pointer;
+  transition: border-color 140ms ease, background 140ms ease, transform 140ms var(--ease-spring);
+}
+
+.file-drop:hover {
+  border-color: var(--teal);
+}
+
+/* .is-dragover: a file is being dragged over the zone (js/reserve.js).
+   .has-file: a file has been chosen, by click or by drop. */
+.file-drop.is-dragover {
+  border-color: var(--teal);
+  background: var(--teal-tint);
+  transform: scale(1.012);
+}
+
+.file-drop.has-file {
+  border-style: solid;
+  border-color: var(--teal);
+  background: var(--teal-tint);
+  animation: file-pop 200ms var(--ease-spring);
+}
+
+.file-drop input[type="file"] {
+  display: none;
+}
+
+.file-drop-label {
+  font-size: 13.5px;
+  color: var(--ink-muted);
+}
+
+.file-drop-filename {
+  font-size: 13px;
+  color: var(--teal-dark);
+  font-weight: 600;
+  margin-top: 6px;
+  word-break: break-all;
+}
+
+.file-drop.has-file .file-drop-filename::before {
+  content: '✓ ';
+}
+
+@keyframes file-pop {
+  0% {
+    transform: scale(0.97);
+  }
+
+  60% {
+    transform: scale(1.015);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+.unavailable-card {
+  padding: 44px 28px;
+  text-align: center;
+}
+
+.unavailable-card h2 {
+  font-family: var(--font-display);
+  font-size: 20px;
+  margin-bottom: 10px;
+  color: var(--ink);
+}
+
+.unavailable-card p {
+  color: var(--ink-muted);
+  margin-bottom: 22px;
+}
+
+/* ---------------------------------------------------------------------
+   Dashboard (customer)
+   --------------------------------------------------------------------- */
+
+.dashboard-main {
+  padding: 40px 0 96px;
+}
+
+.dashboard-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 22px;
+}
+
+.dashboard-head h1 {
+  font-size: clamp(22px, 3vw, 28px);
+}
+
+.nav-bell {
+  position: relative;
+  padding: 9px 11px;
+}
+
+.notif-dot {
+  position: absolute;
+  top: 6px;
+  right: 7px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--danger);
+  border: 1.5px solid var(--surface);
+  animation: notif-pulse 2.2s ease-out infinite;
+}
+
+@keyframes notif-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(185, 28, 28, 0.45);
+  }
+
+  70% {
+    box-shadow: 0 0 0 7px rgba(185, 28, 28, 0);
+  }
+
+  100% {
+    box-shadow: 0 0 0 0 rgba(185, 28, 28, 0);
+  }
+}
+
+.notif-panel {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  margin-bottom: 24px;
+  overflow: hidden;
+  animation: fade-up var(--dur-med) var(--ease-out);
+}
+
+.notif-panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--line);
+}
+
+.notif-panel-head h2 {
+  font-size: 15px;
+}
+
+.notif-mark-all {
+  background: none;
+  border: none;
+  color: var(--teal-dark);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.notif-mark-all:disabled {
+  color: var(--ink-faint);
+  cursor: default;
+}
+
+.notif-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 18px;
+  border-bottom: 1px solid var(--line);
+  font-size: 13.5px;
+}
+
+.notif-item:last-child {
+  border-bottom: none;
+}
+
+.notif-item-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--teal);
+  margin-top: 5px;
+  flex-shrink: 0;
+}
+
+.notif-item.is-read .notif-item-dot {
+  background: var(--line-strong);
+}
+
+.notif-item-message {
+  color: var(--ink);
+}
+
+.notif-item.is-read .notif-item-message {
+  color: var(--ink-muted);
+}
+
+.notif-item-time {
+  color: var(--ink-faint);
+  font-size: 12px;
+  margin-top: 2px;
+}
+
+.notif-empty {
+  padding: 24px 18px;
+  text-align: center;
+  color: var(--ink-muted);
+  font-size: 13.5px;
+}
+
+.reservation-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.reservation-card {
+  padding: 18px 22px;
+  animation: fade-up var(--dur-med) var(--ease-out) both;
+}
+
+.reservation-list .reservation-card:nth-child(1) {
+  animation-delay: 0ms;
+}
+
+.reservation-list .reservation-card:nth-child(2) {
+  animation-delay: 40ms;
+}
+
+.reservation-list .reservation-card:nth-child(3) {
+  animation-delay: 80ms;
+}
+
+.reservation-list .reservation-card:nth-child(n+4) {
+  animation-delay: 120ms;
+}
+
+.reservation-card-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+
+.reservation-card h3 {
+  font-size: 16px;
+  margin-bottom: 3px;
+}
+
+.reservation-sub {
+  font-size: 13px;
+  color: var(--ink-muted);
+}
+
+.reservation-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 18px;
+  font-size: 13px;
+  color: var(--ink-muted);
+  border-top: 1px solid var(--line);
+  padding-top: 12px;
+  margin-top: 4px;
+}
+
+.reservation-meta strong {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.dashboard-empty {
+  text-align: center;
+  padding: 64px 24px;
+  color: var(--ink-muted);
+}
+
+.dashboard-empty h2 {
+  font-family: var(--font-display);
+  font-size: 22px;
+  color: var(--ink);
+  margin-bottom: 10px;
+}
+/* =====================================================================
+   Defense-scope additions: offline banner, skeletons, freshness,
+   prescription tag, consent rows, disclaimer, legal page.
+   ===================================================================== */
+
+.offline-banner {
+  position: sticky;
+  top: 0;
+  z-index: 200;
+  padding: 8px 16px;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 600;
+  color: #fff;
+  background: var(--danger);
+}
+.offline-banner[hidden] { display: none; }
+
+body.is-offline form[data-requires-network] button[type="submit"] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.skeleton-list { display: grid; gap: 12px; }
+.skeleton {
+  border-radius: var(--radius-md);
+  background: linear-gradient(90deg, var(--surface) 25%, var(--line) 50%, var(--surface) 75%);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.4s linear infinite;
+}
+.skeleton-row { height: 76px; }
+@keyframes skeleton-shimmer {
+  from { background-position: 200% 0; }
+  to { background-position: -200% 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .skeleton { animation: none; }
+}
+
+.result-flags {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 10px;
+  margin-top: 4px;
+  font-size: 12px;
+}
+.result-flags:empty { display: none; }
+
+.freshness { color: var(--ink-faint); }
+.freshness-stale { color: var(--status-low-fg); font-weight: 600; }
+
+.rx-tag {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--status-low-fg);
+  background: var(--status-low-bg);
+}
+
+.consent-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin: 4px 0 18px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--ink-muted);
+  cursor: pointer;
+}
+.consent-row input[type="checkbox"] {
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  margin-top: 2px;
+  accent-color: var(--teal);
+}
+.consent-row a { color: var(--teal-dark); text-decoration: underline; }
+
+.disclaimer-box {
+  margin-bottom: 16px;
+  padding: 12px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--status-low-fg);
+  background: var(--status-low-bg);
+}
+
+.footer-disclaimer a { color: inherit; text-decoration: underline; }
+
+.reservation-actions { margin-top: 12px; }
+
+.legal-main { padding: 48px 0 96px; }
+.legal-container { max-width: 720px; }
+.legal-container h1 { margin-bottom: 4px; }
+.legal-container h2 { font-size: 18px; margin: 28px 0 6px; }
+.legal-container p { color: var(--ink-muted); line-height: 1.65; }
+.legal-meta { font-size: 13px; color: var(--ink-faint) !important; }
