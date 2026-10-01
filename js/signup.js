@@ -33,7 +33,8 @@ function sanitizeAndValidatePhone(value, showError = phoneTouched, caret = phone
   phoneInput.value = cleaned;
   phoneInput.setSelectionRange(Math.min(cleanCaret, cleaned.length), Math.min(cleanCaret, cleaned.length));
   phoneInput.setCustomValidity(message);
-  phoneInput.toggleAttribute('aria-invalid', showError && !valid);
+  if (showError && !valid) phoneInput.setAttribute('aria-invalid', 'true');
+  else phoneInput.removeAttribute('aria-invalid');
   phoneError.textContent = showError && !valid ? message : '';
   return valid;
 }
@@ -104,7 +105,8 @@ function validatePassword() {
     : '';
 
   passwordInput.setCustomValidity(message);
-  passwordInput.toggleAttribute('aria-invalid', Boolean(message));
+  if (message) passwordInput.setAttribute('aria-invalid', 'true');
+  else passwordInput.removeAttribute('aria-invalid');
   passwordError.textContent = message;
   return !message;
 }
@@ -116,7 +118,8 @@ function validatePasswordConfirmation() {
   const message = mismatch ? 'Passwords do not match.' : '';
 
   confirmPasswordInput.setCustomValidity(message);
-  confirmPasswordInput.toggleAttribute('aria-invalid', mismatch);
+  if (mismatch) confirmPasswordInput.setAttribute('aria-invalid', 'true');
+  else confirmPasswordInput.removeAttribute('aria-invalid');
   confirmPasswordMessage.classList.toggle('is-match', match);
   confirmPasswordMessage.textContent = match ? 'Passwords match.' : message;
   return !mismatch;
