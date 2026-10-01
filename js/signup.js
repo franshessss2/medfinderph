@@ -58,6 +58,7 @@ phoneInput.addEventListener('compositionend', () => {
 phoneInput.addEventListener('input', () => {
   if (!phoneComposing) sanitizeAndValidatePhone(phoneInput.value);
 });
+phoneInput.addEventListener('change', () => sanitizeAndValidatePhone(phoneInput.value));
 phoneInput.addEventListener('paste', (event) => {
   event.preventDefault();
   insertPhoneText(event.clipboardData.getData('text'));
@@ -121,12 +122,16 @@ function validatePasswordConfirmation() {
   return !mismatch;
 }
 
-passwordInput.addEventListener('input', () => {
+function validateBothPasswordFields() {
   validatePassword();
   validatePasswordConfirmation();
-});
-passwordInput.addEventListener('blur', validatePassword);
+}
+
+passwordInput.addEventListener('input', validateBothPasswordFields);
+passwordInput.addEventListener('change', validateBothPasswordFields);
+passwordInput.addEventListener('blur', validateBothPasswordFields);
 confirmPasswordInput.addEventListener('input', validatePasswordConfirmation);
+confirmPasswordInput.addEventListener('change', validatePasswordConfirmation);
 confirmPasswordInput.addEventListener('blur', () => {
   confirmPasswordTouched = true;
   validatePasswordConfirmation();
