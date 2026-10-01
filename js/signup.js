@@ -48,7 +48,6 @@ function sanitizeAndValidatePhone(value, showError = phoneTouched, caret = phone
     cleaned = `0${cleaned}`;
     cleanCaret += 1;
   }
-  cleaned = cleaned.slice(0, 11);
 
   const valid = /^09\d{9}$/.test(cleaned);
   const message = valid ? '' : 'Enter an 11-digit PH mobile number starting with 09';
