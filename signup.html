@@ -101,7 +101,8 @@
         <form id="signup-form" novalidate data-requires-network>
           <div class="field">
             <label for="full_name">Full name</label>
-            <input type="text" id="full_name" name="full_name" autocomplete="name" required />
+            <input type="text" id="full_name" name="full_name" autocomplete="name" aria-describedby="full-name-error" required />
+            <span class="validation-message" id="full-name-error" aria-live="polite"></span>
           </div>
           <div class="field">
             <label for="email">Email</label>

@@ -5,6 +5,8 @@ const form = document.getElementById('signup-form');
 const errorEl = document.getElementById('form-error');
 const submitBtn = document.getElementById('submit-btn');
 const consentBox = document.getElementById('privacy_consent');
+const fullNameInput = document.getElementById('full_name');
+const fullNameError = document.getElementById('full-name-error');
 const phoneInput = document.getElementById('phone');
 const phoneError = document.getElementById('phone-error');
 const passwordInput = document.getElementById('password');
@@ -12,9 +14,29 @@ const confirmPasswordInput = document.getElementById('confirm_password');
 const passwordError = document.getElementById('password-error');
 const confirmPasswordMessage = document.getElementById('confirm-password-message');
 const passwordToggles = document.querySelectorAll('[data-password-toggle]');
+let fullNameTouched = false;
 let phoneTouched = false;
 let phoneComposing = false;
 let confirmPasswordTouched = false;
+
+function validateFullName(showError = fullNameTouched) {
+  const name = fullNameInput.value.trim();
+  const valid = name.length >= 2 && name.length <= 100 && /\p{L}/u.test(name);
+  const message = valid ? '' : 'Enter your full name (2-100 characters, including letters).';
+
+  fullNameInput.setCustomValidity(message);
+  if (showError && !valid) fullNameInput.setAttribute('aria-invalid', 'true');
+  else fullNameInput.removeAttribute('aria-invalid');
+  fullNameError.textContent = showError && !valid ? message : '';
+  return valid;
+}
+
+fullNameInput.addEventListener('input', () => validateFullName());
+fullNameInput.addEventListener('change', () => validateFullName());
+fullNameInput.addEventListener('blur', () => {
+  fullNameTouched = true;
+  validateFullName();
+});
 
 function sanitizeAndValidatePhone(value, showError = phoneTouched, caret = phoneInput.selectionStart) {
   let cleaned = value.replace(/\D/g, '');
@@ -181,6 +203,8 @@ form?.addEventListener('submit', async (event) => {
     return;
   }
 
+  fullNameTouched = true;
+  validateFullName();
   confirmPasswordTouched = true;
   validatePassword();
   validatePasswordConfirmation();
