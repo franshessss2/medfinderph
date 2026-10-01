@@ -16,15 +16,22 @@ let phoneTouched = false;
 let phoneComposing = false;
 let confirmPasswordTouched = false;
 
-function sanitizeAndValidatePhone(value, showError = phoneTouched) {
+function sanitizeAndValidatePhone(value, showError = phoneTouched, caret = phoneInput.selectionStart) {
   let cleaned = value.replace(/\D/g, '');
-  if (cleaned.startsWith('639')) cleaned = `0${cleaned.slice(2)}`;
-  else if (cleaned.startsWith('9')) cleaned = `0${cleaned}`;
+  let cleanCaret = value.slice(0, caret ?? value.length).replace(/\D/g, '').length;
+  if (cleaned.startsWith('639')) {
+    cleaned = `0${cleaned.slice(2)}`;
+    cleanCaret = Math.max(1, cleanCaret - 1);
+  } else if (cleaned.startsWith('9')) {
+    cleaned = `0${cleaned}`;
+    cleanCaret += 1;
+  }
   cleaned = cleaned.slice(0, 11);
 
   const valid = /^09\d{9}$/.test(cleaned);
   const message = valid ? '' : 'Enter an 11-digit PH mobile number starting with 09';
   phoneInput.value = cleaned;
+  phoneInput.setSelectionRange(Math.min(cleanCaret, cleaned.length), Math.min(cleanCaret, cleaned.length));
   phoneInput.setCustomValidity(message);
   phoneInput.toggleAttribute('aria-invalid', showError && !valid);
   phoneError.textContent = showError && !valid ? message : '';
@@ -36,6 +43,8 @@ function insertPhoneText(text) {
   const end = phoneInput.selectionEnd ?? start;
   sanitizeAndValidatePhone(
     `${phoneInput.value.slice(0, start)}${text}${phoneInput.value.slice(end)}`,
+    phoneTouched,
+    start + text.length,
   );
 }
 
