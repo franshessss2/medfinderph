@@ -52,7 +52,14 @@ function sanitizeAndValidatePhone(value, showError = phoneTouched, caret = phone
   const valid = /^09\d{9}$/.test(cleaned);
   const message = valid ? '' : 'Enter an 11-digit PH mobile number starting with 09';
   phoneInput.value = cleaned;
-  phoneInput.setSelectionRange(Math.min(cleanCaret, cleaned.length), Math.min(cleanCaret, cleaned.length));
+  if (document.activeElement === phoneInput && ['tel', 'text'].includes(phoneInput.type)) {
+    const nextCaret = Math.min(cleanCaret, cleaned.length);
+    try {
+      phoneInput.setSelectionRange(nextCaret, nextCaret);
+    } catch (_) {
+      // Some Safari/iOS versions reject selection updates on telephone inputs.
+    }
+  }
   phoneInput.setCustomValidity(message);
   if (showError && !valid) phoneInput.setAttribute('aria-invalid', 'true');
   else phoneInput.removeAttribute('aria-invalid');
