@@ -81,8 +81,8 @@ function setPasswordVisibility(toggle, visible) {
   input.type = visible ? 'text' : 'password';
   toggle.setAttribute('aria-label', visible ? 'Hide password' : 'Show password');
   toggle.setAttribute('aria-pressed', String(visible));
-  toggle.querySelector('.eye-icon').hidden = visible;
-  toggle.querySelector('.eye-off-icon').hidden = !visible;
+  toggle.querySelector('.eye-icon').toggleAttribute('hidden', visible);
+  toggle.querySelector('.eye-off-icon').toggleAttribute('hidden', !visible);
 
   input.setSelectionRange(selectionStart, selectionEnd);
 }
